@@ -156,7 +156,8 @@ add_action( 'rest_api_init', function() {
         'adress', 'name',
         'category', 'phone',
         'email', 'website',
-        'categories', 'picture'
+        'categories', 'picture',
+        'coverphoto'
     );
 
     $event_meta_fields = array(

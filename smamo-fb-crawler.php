@@ -76,7 +76,7 @@ function smamo_crawl() {
 
             // Gets crawl locations decoded body from the fb api
             try {
-                $fbgr = $fb->get( '/'.urlencode($crawlloc->post_title).'?fields=id,about,location,name,picture,category,phone,emails,website,events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
+                $fbgr = $fb->get( '/'.urlencode($crawlloc->post_title).'?fields=id,about,location,name,picture,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
                 $body = $fbgr->getDecodedBody();
             } catch (Facebook\Exceptions\FacebookResponseException $e) {
                 $response['error'][] = 'Graph returned an error: ' . $e->getMessage(); continue;
@@ -113,7 +113,7 @@ function smamo_crawl() {
                 update_post_meta($loc_id, "phone", $body["phone"]);
                 update_post_meta($loc_id, "email", $body["emails"]);
                 update_post_meta($loc_id, "picture", $body["picture"]['data']['url']);
-
+                update_post_meta($loc_id, "coverphoto", $body["cover"]["source"]);
 
                 if (filter_var($body["website"], FILTER_VALIDATE_URL)) {
                     update_post_meta($loc_id, "website", $body["website"]);
@@ -192,7 +192,7 @@ function smamo_crawl() {
         update_post_meta($loc_id, "phone", $body["phone"]);
         update_post_meta($loc_id, "email", $body["emails"]);
         update_post_meta($loc_id, "picture", $body["picture"]['data']['url']);
-
+        update_post_meta($loc_id, "coverphoto", $body["cover"]["source"]);
 
 
         if (filter_var($body["website"], FILTER_VALIDATE_URL)) {
