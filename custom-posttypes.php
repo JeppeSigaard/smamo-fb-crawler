@@ -126,7 +126,7 @@ function crawlloc_category_tax() {
 	$labels = array(
         'label' => __( 'Kategori' ),
         'rewrite' => array( 'slug' => 'crawl_cat' ),
-        'hierarchical' => false,
+        'hierarchical' => true,
     );
 
     register_taxonomy(
@@ -138,7 +138,7 @@ function crawlloc_category_tax() {
     $labels = array(
         'label' => __( 'Kategori' ),
         'rewrite' => array( 'slug' => 'category' ),
-        'hierarchical' => false,
+        'hierarchical' => true,
     );
 
     register_taxonomy(

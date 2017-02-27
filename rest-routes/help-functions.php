@@ -11,7 +11,7 @@
     if(!$fields){
         $fields = array(
             'date','date_gmt','title',
-            'start_time','fbid','parentname','parentid', 'parentfbid',
+            'start_time','end_time','fbid','parentname','parentid', 'parentfbid',
             'name','description','adress','phone','imgurl',
             'ticket_uri', 'website', 'images', 'picture', 'parentpicture',
             'categories', 'about', 'slug',

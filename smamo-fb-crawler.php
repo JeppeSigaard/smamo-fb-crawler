@@ -23,11 +23,17 @@ add_action( 'wp_ajax_smamo_crawl', 'smamo_crawl' );
 add_action( 'wp_ajax_nopriv_smamo_crawl', 'smamo_crawl' );
 function smamo_crawl() {
 
+    // Get and set $opt_cycle
+    $opt_cycle = get_option('smamo_crawl_iteration', 0);
+    $opt_cycle ++;
+    update_option('smamo_crawl_iteration', $opt_cycle);
+
     require_once plugin_dir_path(__FILE__) . 'php-graph-sdk-5.0.0/src/Facebook/autoload.php';
 
     $response = array(
         'started' => date("Y-m-d H:i:s"),
     );
+
     $do = (isset($_POST['do'])) ? esc_attr($_POST['do']) : 'crawl';
     $id = (isset($_POST['id'])) ? esc_attr($_POST['id']) : false;
     $update_old = ( isset($_POST['update_old']) && 'true' === $_POST['update_old'] ) ? true : false;
@@ -261,7 +267,8 @@ function smamo_crawl() {
                 }
 
                 // Delete if in database and is_canceled is true
-                if($event['is_canceled'] ){
+                if($event['is_canceled'] === 'true'){
+                    $response['events']['deleted'][] = $event_buffer;
                     if($event_buffer){
                          wp_delete_post($event_buffer, true);
                     }
@@ -306,6 +313,7 @@ function smamo_crawl() {
                     update_post_meta($event_post_id, "parentfbid", $body["id"]);
                     update_post_meta($event_post_id, "description", $event["description"]);
                     update_post_meta($event_post_id, "start_time", substr($event["start_time"], 0, 19));
+                    update_post_meta($event_post_id, "end_time", substr($event["end_time"], 0, 19));
                     update_post_meta($event_post_id, "adress", $event["place"]["location"]["street"]);
                     update_post_meta($event_post_id, "imgurl", $event["cover"]["source"]);
                     update_post_meta($event_post_id, "ticket_uri", $event["ticket_uri"]);
@@ -406,6 +414,37 @@ function smamo_crawl() {
 
     if($silent){
         wp_die(json_encode('Silent success, shush...'));
+    }
+
+
+    /*--------*/
+    // Purge every half hour
+    if($opt_cycle){
+
+        $response['purge'] = 'active';
+        $events = get_posts(array(
+            'post_type' => 'event',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                array(
+                    'key' => 'start_time',
+                    'value' => date('Y-m-d\TH:i:s', strtotime('-1 year')),
+                    'compare' => '>',
+                    'type' => 'DATETIME'
+                ),
+            )
+        ));
+        foreach($events as $event){
+
+            $fbid = get_post_meta($event->ID, 'fbid', true);
+
+            try { $fbgr = $fb->get( '/'. $fbid . '?fields=is_canceled'); $event = $fbgr->getDecodedBody();
+            } catch (Facebook\Exceptions\FacebookResponseException $e) {
+                wp_delete_post($event->ID, true);
+            } catch(Facebook\Exceptions\FacebookSDKException $e) {
+                wp_delete_post($event->ID, true);
+            }
+        }
     }
 
     wp_die(json_encode($response));
