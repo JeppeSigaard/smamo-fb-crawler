@@ -50,8 +50,9 @@ function smamo_rest_locations( $data ) {
 
     // Loop through and apply fields
     foreach($posts as $p){
-
-       $r[] = smamo_rest_get_fields($p,$fields);
+        if('' !== $p->post_title){
+            $r[] = smamo_rest_get_fields($p,$fields);
+        }
     }
 
     return $r;

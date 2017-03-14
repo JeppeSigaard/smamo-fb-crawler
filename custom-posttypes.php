@@ -1,53 +1,13 @@
 <?php
 
-// Crawl locations type
-add_action( 'init', 'smamo_add_post_type_crawllocation' );
-function smamo_add_post_type_crawllocation() {
-	register_post_type( 'crawllocation', array(
-
-        'menu_icon' 		 => 'dashicons-pressthis',
-		'public'             => false,
-		'publicly_queryable' => false,
-		'show_ui'            => true,
-		'show_in_menu'       => true,
-		'query_var'          => true,
-		'rewrite'            => array( 'slug' => 'crawllocation' ),
-		'capability_type'    => 'post',
-		'has_archive'        => true,
-		'hierarchical'       => false,
-		'menu_position'      => 22,
-        'show_in_rest'       => true,
-  		'rest_base'          => 'crawllocations',
-  		'rest_controller_class' => 'WP_REST_Posts_Controller',
-		'supports'           => array( 'title', 'thumbnail', 'taxonomies'),
-        'labels'             => array(
-            'name'               => _x( 'Crawl sted', 'post type general name', 'smamo' ),
-            'singular_name'      => _x( 'Crawl sted', 'post type singular name', 'smamo' ),
-            'menu_name'          => _x( 'Crawl steder', 'admin menu', 'smamo' ),
-            'name_admin_bar'     => _x( 'Crawl steder', 'add new on admin bar', 'smamo' ),
-            'add_new'            => _x( 'Tilføj ny ', 'begivenhed', 'smamo' ),
-            'add_new_item'       => __( 'Tilføj ny', 'smamo' ),
-            'new_item'           => __( 'Nyt crawl sted', 'smamo' ),
-            'edit_item'          => __( 'Rediger', 'smamo' ),
-            'view_item'          => __( 'Se crawl sted', 'smamo' ),
-            'all_items'          => __( 'Se alle', 'smamo' ),
-            'search_items'       => __( 'Find crawl sted', 'smamo' ),
-            'parent_item_colon'  => __( 'Forældre:', 'smamo' ),
-            'not_found'          => __( 'Start med at oprette et nyt crawl sted.', 'smamo' ),
-            'not_found_in_trash' => __( 'Papirkurven er tom.', 'smamo' ),
-            ),
-	   )
-    );
-}
-
 // Location type
 add_action( 'init', 'smamo_add_post_type_location' );
 function smamo_add_post_type_location() {
 	register_post_type( 'location', array(
 
         'menu_icon' 		 => 'dashicons-location',
-		'public'             => false,
-		'publicly_queryable' => false,
+		'public'             => true,
+		'publicly_queryable' => true,
 		'show_ui'            => true,
 		'show_in_menu'       => true,
 		'query_var'          => true,
@@ -86,8 +46,8 @@ function smamo_add_post_type_event() {
 	register_post_type( 'event', array(
 
         'menu_icon' 		 => 'dashicons-calendar-alt',
-		'public'             => false,
-		'publicly_queryable' => false,
+		'public'             => true,
+		'publicly_queryable' => true,
 		'show_ui'            => true,
 		'show_in_menu'       => true,
 		'query_var'          => true,
@@ -120,22 +80,10 @@ function smamo_add_post_type_event() {
     );
 }
 
-// Taxonomy (Category) to crawl location
+// Taxonomy (Category) to location
 add_action( 'init', 'crawlloc_category_tax' );
 function crawlloc_category_tax() {
 	$labels = array(
-        'label' => __( 'Kategori' ),
-        'rewrite' => array( 'slug' => 'crawl_cat' ),
-        'hierarchical' => true,
-    );
-
-    register_taxonomy(
-		'crawl_cat',
-		'crawllocation',
-		$labels
-	);
-
-    $labels = array(
         'label' => __( 'Kategori' ),
         'rewrite' => array( 'slug' => 'category' ),
         'hierarchical' => true,

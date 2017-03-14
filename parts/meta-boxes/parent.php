@@ -3,6 +3,7 @@
 /*
 Title: Sted
 Post Type: event
+order: 3
 */
 
 piklist('field', array(
