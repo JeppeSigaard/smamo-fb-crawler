@@ -17,6 +17,7 @@ require 'rest-routes/future-events.php';
 require 'rest-routes/events.php';
 require 'rest-routes/locations.php';
 require 'rest-routes/categories.php';
+require 'crawler-functions/formatting/hours-format.php';
 
 // Smamo crawl
 add_action( 'wp_ajax_smamo_crawl', 'smamo_crawl' );

@@ -1,7 +1,5 @@
 <?php
 
-include plugin_dir_path(__FILE__) . 'crawler-functions/formatting/hours-format.php';
-
 $locations = get_posts(array( 'post_type' => 'location', 'numberposts' => -1 ));
 foreach ($locations as $location) {
 
