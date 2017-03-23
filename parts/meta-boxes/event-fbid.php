@@ -2,7 +2,8 @@
 
 /*
 Title: Facebook ID
-Post Type: location, event
+Post Type: event
+order: 1
 */
 
 piklist('field', array(

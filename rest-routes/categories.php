@@ -50,6 +50,10 @@ function smamo_rest_categories($data){
             $r_term['location_count'] = $term->count;
         }
 
+        if(!$fields || in_array('parent', $fields)){
+            $r_term['category_parent'] = $term->parent;
+        }
+
         $r[] = $r_term;
     }
 
