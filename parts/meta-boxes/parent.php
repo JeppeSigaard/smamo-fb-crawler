@@ -15,5 +15,5 @@ piklist('field', array(
 piklist('field', array(
     'type' => 'text',
     'label' => 'Facebook ID',
-    'field' => 'parentid',
+    'field' => 'parentfbid',
 ));

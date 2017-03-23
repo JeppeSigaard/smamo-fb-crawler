@@ -46,32 +46,37 @@ function smamo_crawl() {
 
     // Hent ID liste
     if('fetch_ids' === $do && isset($_POST['type'])){
-        require_once plugin_dir_path(__FILE__) . 'crawler-functions/fetch-ids.php';
+        include plugin_dir_path(__FILE__) . 'crawler-functions/fetch-ids.php';
     }
 
     // Crawl all
     if('crawl' === $do && !$id){
-        require_once plugin_dir_path(__FILE__) . 'crawler-functions/locations.php';
+        include plugin_dir_path(__FILE__) . 'crawler-functions/locations.php';
     }
 
     // Crawl single
     if('crawl' === $do && $id){
-        require_once plugin_dir_path(__FILE__) . 'crawler-functions/single-location.php';
+        include plugin_dir_path(__FILE__) . 'crawler-functions/single-location.php';
     }
 
     // Hent events for alle
     if('events' === $do && !$id){
-        require_once plugin_dir_path(__FILE__) . 'crawler-functions/events.php';
+        include plugin_dir_path(__FILE__) . 'crawler-functions/events.php';
     }
 
     // Hent events for ét sted
     if('events' === $do && $id){
-         require_once plugin_dir_path(__FILE__) . 'crawler-functions/single-event.php';
+         include plugin_dir_path(__FILE__) . 'crawler-functions/single-event.php';
     }
 
     // Monitor: Hent enkelt post og meta
     if('get_post' === $do && $id){
-        require_once plugin_dir_path(__FILE__) . 'crawler-functions/get-post.php';
+        include plugin_dir_path(__FILE__) . 'crawler-functions/get-post.php';
+    }
+
+    // Purge events
+    if('purge_events' === $do){
+        include plugin_dir_path(__FILE__) . 'crawler-functions/purge-events.php';
     }
 
     $response['ended'] = date("Y-m-d H:i:s");
