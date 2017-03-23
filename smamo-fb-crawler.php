@@ -76,7 +76,7 @@ function smamo_crawl() {
 
             // Gets crawl locations decoded body from the fb api
             try {
-                $fbgr = $fb->get( '/'.urlencode($crawlloc->post_title).'?fields=id,about,location,name,picture,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
+                $fbgr = $fb->get( '/'.urlencode($crawlloc->post_title).'?fields=id,description,about,hours,location,name,picture,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
                 $body = $fbgr->getDecodedBody();
             } catch (Facebook\Exceptions\FacebookResponseException $e) {
                 $response['error'][] = 'Graph returned an error: ' . $e->getMessage(); continue;
@@ -107,8 +107,10 @@ function smamo_crawl() {
 
                 update_post_meta($loc_id, "fbid", $body["id"]);
                 update_post_meta($loc_id, "about", $body["about"]);
+                update_post_meta($loc_id, "description", $body["description"]);
                 update_post_meta($loc_id, "adress", $body["location"]["street"]);
                 update_post_meta($loc_id, "name", $body["name"]);
+                update_post_meta($loc_id, "hours", json_encode( format_hours( $body[ 'hours' ] ) ));
                 update_post_meta($loc_id, "category", $body["category"]);
                 update_post_meta($loc_id, "phone", $body["phone"]);
                 update_post_meta($loc_id, "email", $body["emails"]);
@@ -120,6 +122,7 @@ function smamo_crawl() {
                 } else {
                     delete_post_meta($loc_id, "website");
                 }
+                /*
 
                 // Takes categories from parent crawlloc
                 // and adds its as meta to location post
@@ -139,6 +142,8 @@ function smamo_crawl() {
 
                 //update_post_meta( $loc_id, 'categories', $categories );
                 wp_set_post_terms( $loc_id, $term_ids, 'category', false );
+
+                */
             }
         }
     }
@@ -156,7 +161,7 @@ function smamo_crawl() {
 
         // Gets crawl locations decoded body from the fb api
         try {
-            $fbgr = $fb->get( '/'.$fbid.'?fields=id,about,location,name,picture,category,phone,emails,website,events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
+            $fbgr = $fb->get( '/'.$fbid.'?fields=id,about,description,hours,location,name,picture,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
             $body = $fbgr->getDecodedBody();
         } catch (Facebook\Exceptions\FacebookResponseException $e) {
             $response['error'][] = 'Graph returned an error: ' . $e->getMessage(); wp_die(json_encode($response));
@@ -185,9 +190,11 @@ function smamo_crawl() {
         $response['locations'][] = array($loc_id,(0 === $post_id) ? 'new' : 'old');
 
         update_post_meta($loc_id, "fbid", $body["id"]);
+        update_post_meta($loc_id, "description", $body["description"]);
         update_post_meta($loc_id, "about", $body["about"]);
         update_post_meta($loc_id, "adress", $body["location"]["street"]);
         update_post_meta($loc_id, "name", $body["name"]);
+        update_post_meta($loc_id, "hours", json_encode( format_hours( $body[ 'hours' ] ) ));
         update_post_meta($loc_id, "category", $body["category"]);
         update_post_meta($loc_id, "phone", $body["phone"]);
         update_post_meta($loc_id, "email", $body["emails"]);
@@ -234,7 +241,7 @@ function smamo_crawl() {
 
             // Gets crawl locations decoded body from the fb api
             try {
-                $fbgr = $fb->get( '/'.$fbid.'?fields=id,about,location,name,picture,category,phone,emails,website,events{photos{images},cover{source,id},name,description,id,start_time,end_time,place,ticket_uri,owner,is_canceled}' );
+                $fbgr = $fb->get( '/'.$fbid.'?fields=id,description,about,hours,location,name,picture,category,phone,emails,website,events{photos{images},cover{source,id},name,description,id,start_time,end_time,place,ticket_uri,owner,is_canceled}' );
                 $body = $fbgr->getDecodedBody();
             } catch (Facebook\Exceptions\FacebookResponseException $e) {
                 $response['error'][] = 'Graph returned an error: ' . $e->getMessage(); continue;
@@ -469,3 +476,29 @@ function buddydev_api_slug( $slug ) {
 
     return 'api';
 }
+
+
+// Format hour data
+function format_hours( $data ) {
+    $resp = array();
+    foreach ( $data as $key => $value ) {
+        $day = substr( $key, 0, 3 );
+        if ( $resp[ $day ] === null ) { $resp[ $day ] = [ $value ]; }
+        else { array_push( $resp[ $day ], $value ); }
+    } return $resp;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -14,7 +14,8 @@
             'start_time','end_time','fbid','parentname','parentid', 'parentfbid',
             'name','description','adress','phone','imgurl',
             'ticket_uri', 'website', 'images', 'picture', 'parentpicture',
-            'categories', 'about', 'slug', 'coverphoto'
+            'categories', 'about', 'description', 'slug', 'coverphoto',
+            'hours'
         );
     }
 
