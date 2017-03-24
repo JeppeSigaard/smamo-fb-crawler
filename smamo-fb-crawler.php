@@ -17,6 +17,9 @@ require 'rest-routes/future-events.php';
 require 'rest-routes/events.php';
 require 'rest-routes/locations.php';
 require 'rest-routes/categories.php';
+require 'rest-routes/commercials.php';
+
+// Crawler functions
 require 'crawler-functions/formatting/hours-format.php';
 
 // Smamo crawl

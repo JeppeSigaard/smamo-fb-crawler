@@ -15,7 +15,10 @@
             'name','description','adress','phone','imgurl',
             'ticket_uri', 'website', 'images', 'picture', 'parentpicture',
             'categories', 'about', 'description', 'slug', 'coverphoto',
-            'hours'
+            'hours',
+
+            'link', 'commercial_tn_large',
+            'commercial_tn_medium', 'commercial_tn_small',
         );
     }
 
