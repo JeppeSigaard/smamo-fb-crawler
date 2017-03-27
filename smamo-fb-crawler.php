@@ -17,6 +17,10 @@ require 'rest-routes/future-events.php';
 require 'rest-routes/events.php';
 require 'rest-routes/locations.php';
 require 'rest-routes/categories.php';
+require 'rest-routes/commercials.php';
+
+// Crawler functions
+require 'crawler-functions/formatting/hours-format.php';
 
 // Smamo crawl
 add_action( 'wp_ajax_smamo_crawl', 'smamo_crawl' );
@@ -97,3 +101,18 @@ add_filter( 'rest_url_prefix', 'buddydev_api_slug');
 function buddydev_api_slug( $slug ) {
     return 'api';
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

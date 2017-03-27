@@ -14,7 +14,11 @@
             'start_time','end_time','fbid','parentname','parentid', 'parentfbid',
             'name','description','adress','phone','imgurl',
             'ticket_uri', 'website', 'images', 'picture', 'parentpicture',
-            'categories', 'about', 'slug', 'coverphoto'
+            'categories', 'about', 'description', 'slug', 'coverphoto',
+            'hours',
+
+            'link', 'commercial_tn_large',
+            'commercial_tn_medium', 'commercial_tn_small',
         );
     }
 

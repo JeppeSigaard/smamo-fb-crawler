@@ -1,6 +1,6 @@
 <?php
-$locations = get_posts(array( 'post_type' => 'location', 'numberposts' => -1 ));
 
+$locations = get_posts(array( 'post_type' => 'location', 'numberposts' => -1 ));
 foreach ($locations as $location) {
 
     $path = get_post_meta($location->ID,'fb_crawl',true);
@@ -12,7 +12,7 @@ foreach ($locations as $location) {
     if(!$path){ continue; }
 
     try {
-        $fbgr = $fb->get( '/'.urlencode($path).'?fields=id,about,location,name,picture,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
+        $fbgr = $fb->get( '/'.urlencode($path).'?fields=id,about,location,name,picture,hours,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
         $body = $fbgr->getDecodedBody();
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
         $response['error'][] = 'Graph returned an error: ' . $e->getMessage(); continue;
@@ -36,6 +36,7 @@ foreach ($locations as $location) {
         update_post_meta($loc_id, "adress", $body["location"]["street"]);
         update_post_meta($loc_id, "name", $body["name"]);
         update_post_meta($loc_id, "category", $body["category"]);
+        update_post_meta($loc_id, "hours", json_encode( format_hours( $body['hours'] ) ));
         update_post_meta($loc_id, "phone", $body["phone"]);
         update_post_meta($loc_id, "email", $body["emails"]);
         update_post_meta($loc_id, "picture", $body["picture"]['data']['url']);
