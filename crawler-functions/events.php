@@ -34,6 +34,10 @@ foreach($locations as $location){
 
         $event_buffer = false;
         foreach ( $events as $event_post ) {
+
+            // Purge orphans
+            if(get_post_meta($event_post->ID, 'parentfbid', true) == ''){ wp_delete_post($event_post->ID, true);}
+
             if ( (string)get_post_meta($event_post->ID, 'fbid', true) == (string)$event['id'] ) {
                 $event_buffer = $event_post->ID;
                 break;
@@ -84,8 +88,8 @@ foreach($locations as $location){
             update_post_meta($event_post_id, "parentid", $location->ID);
             update_post_meta($event_post_id, "parentfbid", $body["id"]);
             update_post_meta($event_post_id, "description", $event["description"]);
-            update_post_meta($event_post_id, "start_time", substr($event["start_time"], 0, 19));
-            update_post_meta($event_post_id, "end_time", substr($event["end_time"], 0, 19));
+            update_post_meta($event_post_id, "start_time", $event["start_time"]);
+            update_post_meta($event_post_id, "end_time", $event["end_time"]);
             update_post_meta($event_post_id, "adress", $event["place"]["location"]["street"]);
             update_post_meta($event_post_id, "imgurl", $event["cover"]["source"]);
             update_post_meta($event_post_id, "ticket_uri", $event["ticket_uri"]);
