@@ -123,7 +123,7 @@ add_action( 'init', 'smamo_add_post_type_access' );
 function smamo_add_post_type_access() {
 	register_post_type( 'application', array(
 
-        'menu_icon' 		 => 'dashicons-products',
+        'menu_icon' 		 => 'dashicons-lock',
 		'public'             => false,
 		'publicly_queryable' => false,
 		'show_ui'            => true,

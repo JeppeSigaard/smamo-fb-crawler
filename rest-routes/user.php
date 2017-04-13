@@ -71,8 +71,8 @@ function smamo_rest_update_user($data){
     }
 
     /// Modtag data
-    $post_data = isset($data['data']) ? $data['data'] : false;
-    $post_meta = isset($data['meta_data']) ? $data['meta_data'] : false;
+    $post_data = isset($data['data']) ? $data['data'] : array();
+    $post_meta = isset($data['meta_data']) ? $data['meta_data'] : array();
     $overwrite = isset($data['overwrite']) ? $data['overwrite'] : false;
 
     if($post_data){

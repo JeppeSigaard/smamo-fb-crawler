@@ -55,3 +55,36 @@ function smamo_rest_permission_client($data){
 function smamo_rest_permission_user($data){
    return smamo_rest_check_user_token($data['id'], $data['token']);
 }
+
+// Specifically location permission check
+function smamo_rest_permission_location($data){
+   if(smamo_rest_check_user_token($data['user_id'], $data['token'])){
+
+       $manages = get_user_meta($data['user_id'], 'manages', false);
+
+       foreach($manages as $location){
+           if($location === esc_attr($data['id'])){
+               return true;
+           }
+       }
+   }
+    return false;
+}
+
+// Specifically event permission check
+function smamo_rest_permission_event($data){
+   if(smamo_rest_check_user_token($data['user_id'], $data['token'])){
+
+       $manages = get_user_meta($data['user_id'], 'manages', false);
+
+       $event = get_post(esc_attr($data['id']));
+       $location = get_post_meta($event,'parentid', true);
+
+       foreach($manages as $location){
+           if($location === esc_attr($data['id'])){
+               return true;
+           }
+       }
+   }
+    return false;
+}

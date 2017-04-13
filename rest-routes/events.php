@@ -151,6 +151,58 @@ function smamo_rest_event_single( $data ){
     return $r;
 }
 
+function smamo_rest_update_event($data){
+
+    $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
+
+    // Catch identifier
+    $id = esc_attr($data['id']);
+
+    // First try ID
+    $post = get_post($id);
+
+    // Then try fbid
+    if (!$post || 'event' !== $post->post_type){
+        $fbid_query = get_posts(array(
+            'post_type' => 'event',
+            'posts_per_page' => 1,
+            'post_status' => 'publish',
+            'meta_key' => 'fbid',
+            'meta_value' => $id,
+        ));
+
+        if($fbid_query && isset($fbid_query[0])){$post = $fbid_query[0];}
+    }
+
+    if ($post && 'publish' === $post->post_status && $post->post_type === 'event' ){
+
+         /// Modtag data
+        $post_data = isset($data['data']) ? $data['data'] : array();
+        $post_meta = isset($data['meta_data']) ? $data['meta_data'] : array();
+        $overwrite = isset($data['overwrite']) ? $data['overwrite'] : false;
+
+        if($post_data){
+            $post_data['ID'] = $post->ID;
+            wp_update_user($post_data);
+        }
+
+        foreach($post_meta as $k => $v){
+            if($overwrite){
+                delete_post_meta($post->ID, $k);
+                add_post_meta($post->ID, $k, $v, true);
+            }
+
+            else{
+                update_post_meta($post->ID, $k, $v);
+            }
+        }
+
+        return smamo_rest_get_fields($post, $fields);
+    }
+
+    return new WP_Error( 'error', 'Could not update event', array( 'status' => 404 ) );
+}
+
 add_action( 'rest_api_init', function () {
 
     register_rest_route( 'svendborg', 'events', array(
@@ -159,8 +211,16 @@ add_action( 'rest_api_init', function () {
 	) );
 
     register_rest_route( 'svendborg', 'events/(?P<id>\d+)', array(
-		'methods' => 'GET',
-		'callback' => 'smamo_rest_event_single',
+		array(
+            'methods' => 'GET',
+            'callback' => 'smamo_rest_event_single',
+        ),
+
+        array(
+            'methods' => 'POST',
+            'callback' => 'smamo_rest_update_event',
+            'permission_callback' => 'smamo_rest_permission_event',
+        )
 	) );
 
 } );
