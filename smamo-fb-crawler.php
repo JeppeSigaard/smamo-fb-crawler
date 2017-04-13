@@ -12,9 +12,9 @@ require 'settings-page.php';
 
 
 // Rest routes
+require 'rest-routes/remove-defaults.php';
 require 'rest-routes/permissions.php';
 require 'rest-routes/help-functions.php';
-require 'rest-routes/future-events.php';
 require 'rest-routes/events.php';
 require 'rest-routes/locations.php';
 require 'rest-routes/categories.php';

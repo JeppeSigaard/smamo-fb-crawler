@@ -129,12 +129,11 @@ function smamo_rest_update_location($data){
 
         foreach($post_meta as $k => $v){
             if($overwrite){
-                delete_post_meta($post->ID, $k);
-                add_post_meta($post->ID, $k, $v, true);
+                update_post_meta($post->ID, $k, $v);
             }
 
             else{
-                update_post_meta($post->ID, $k, $v);
+                add_post_meta($post->ID, $k, $v, false);
             }
         }
 

@@ -73,7 +73,7 @@ function smamo_rest_update_user($data){
     /// Modtag data
     $post_data = isset($data['data']) ? $data['data'] : array();
     $post_meta = isset($data['meta_data']) ? $data['meta_data'] : array();
-    $overwrite = isset($data['overwrite']) ? $data['overwrite'] : false;
+    $overwrite = isset($data['overwrite']) ? $data['overwrite'] : true;
 
     if($post_data){
         $post_data['ID'] = $user->ID;
@@ -82,12 +82,13 @@ function smamo_rest_update_user($data){
 
     foreach($post_meta as $k => $v){
         if($overwrite){
-            delete_user_meta($user->ID, $k);
-            add_user_meta($user->ID, $k, $v, true);
+            $update = update_user_meta($user->ID, $k, $v);
+            if(!$update){ return new WP_Error( 'error', 'Data could not be updated', array( 'status' => 400 ) );}
         }
 
         else{
-            update_user_meta($user->ID, $k, $v);
+            $add = add_user_meta($user->ID, $k, $v, false);
+            if(!$add){ return new WP_Error( 'error', 'Data could not be added', array( 'status' => 400 ) );}
         }
     }
 
@@ -170,7 +171,6 @@ function smamo_rest_signon($data){
         return smamo_rest_get_user_fields($user, $fields);
     }
 }
-
 
 add_action( 'rest_api_init', function () {
 

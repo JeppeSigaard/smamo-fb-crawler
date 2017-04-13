@@ -16,9 +16,6 @@ function smamo_add_post_type_location() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => 22,
-        'show_in_rest'       => true,
-  		'rest_base'          => 'locations',
-  		'rest_controller_class' => 'WP_REST_Posts_Controller',
 		'supports'           => array( 'title', 'taxonomies'),
         'labels'             => array(
             'name'               => _x( 'Steder', 'post type general name', 'smamo' ),
@@ -56,9 +53,6 @@ function smamo_add_post_type_event() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => 22,
-        'show_in_rest'       => true,
-  		'rest_base'          => 'events',
-  		'rest_controller_class' => 'WP_REST_Posts_Controller',
 		'supports'           => array( 'title', 'taxonomies'),
         'labels'             => array(
             'name'               => _x( 'Begivenheder', 'post type general name', 'smamo' ),
@@ -96,7 +90,6 @@ function smamo_add_post_type_commercial() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => 22,
-        'show_in_rest'       => true,
 		'supports'           => array( 'title', 'thumbnail'),
         'labels'             => array(
             'name'               => _x( 'Reklamer', 'post type general name', 'smamo' ),
@@ -134,7 +127,6 @@ function smamo_add_post_type_access() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => 22,
-        'show_in_rest'       => true,
 		'supports'           => array( 'title'),
         'labels'             => array(
             'name'               => _x( 'Apps', 'post type general name', 'smamo' ),
@@ -179,59 +171,3 @@ function crawlloc_category_tax() {
 		$labels
 	);
 }
-
-
-// Registers meta data to rest api
-add_action( 'rest_api_init', function() {
-    $location_meta_fields = array(
-        'fbid', 'about',
-        'adress', 'name',
-        'category', 'phone',
-        'email', 'website',
-        'categories', 'picture',
-        'coverphoto'
-    );
-
-    $event_meta_fields = array(
-        'fbid', 'name',
-        'parentname', 'parentid',
-        'description', 'start_time',
-        'adress', 'imgurl',
-        'website', 'phone',
-        'ticket_uri', 'images','parentpicture'
-    );
-
-    $commercial_meta_fields = array(
-        'commercial_tn_large',
-        'commercial_tn_medium',
-        'commercial_tn_small',
-        'link',
-    );
-
-    for ($i = 0; $i < sizeof($location_meta_fields); $i++) {
-        register_rest_field( 'location', $location_meta_fields[$i], array(
-                'get_callback' => function ( $object, $field_name, $request ) {
-                    return get_post_meta( $object[ 'id' ], $field_name, true );
-                }
-            )
-        );
-    }
-
-    for ($i = 0; $i < sizeof($event_meta_fields); $i++) {
-        register_rest_field( 'event', $event_meta_fields[$i], array(
-                'get_callback' => function ( $object, $field_name, $request ) {
-                    return get_post_meta( $object[ 'id' ], $field_name, true );
-                }
-            )
-        );
-    }
-
-    for ($i = 0; $i < sizeof($commercial_meta_fields); $i++) {
-        register_rest_field( 'commercial', $commercial_meta_fields[$i], array(
-                'get_callback' => function ( $object, $field_name, $request ) {
-                    return get_post_meta( $object[ 'id' ], $field_name, true );
-                }
-            )
-        );
-    }
-});

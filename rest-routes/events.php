@@ -179,7 +179,7 @@ function smamo_rest_update_event($data){
          /// Modtag data
         $post_data = isset($data['data']) ? $data['data'] : array();
         $post_meta = isset($data['meta_data']) ? $data['meta_data'] : array();
-        $overwrite = isset($data['overwrite']) ? $data['overwrite'] : false;
+        $overwrite = isset($data['overwrite']) ? $data['overwrite'] : true;
 
         if($post_data){
             $post_data['ID'] = $post->ID;
@@ -188,12 +188,11 @@ function smamo_rest_update_event($data){
 
         foreach($post_meta as $k => $v){
             if($overwrite){
-                delete_post_meta($post->ID, $k);
-                add_post_meta($post->ID, $k, $v, true);
+                update_post_meta($post->ID, $k, $v);
             }
 
             else{
-                update_post_meta($post->ID, $k, $v);
+                add_post_meta($post->ID, $k, $v, false);
             }
         }
 
