@@ -1,4 +1,3 @@
-
 <?php
 
 // Format hour data

@@ -12,12 +12,15 @@ require 'settings-page.php';
 
 
 // Rest routes
+require 'rest-routes/permissions.php';
 require 'rest-routes/help-functions.php';
 require 'rest-routes/future-events.php';
 require 'rest-routes/events.php';
 require 'rest-routes/locations.php';
 require 'rest-routes/categories.php';
 require 'rest-routes/commercials.php';
+require 'rest-routes/menus.php';
+require 'rest-routes/user.php';
 
 // Crawler functions
 require 'crawler-functions/formatting/hours-format.php';
