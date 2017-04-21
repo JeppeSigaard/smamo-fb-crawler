@@ -19,9 +19,25 @@ function smamo_rest_categories($data){
     foreach($terms as $term){
 
         if(isset($data['featured']) && $data['featured']){
-            $featured = get_term_meta( $term->term_id, 'category_featured', true) ? true : false;
-            if(!$featured){
+
+            $featured = get_term_meta( $term->term_id, 'category_featured', true);
+
+            if(!$featured || '0' == $featured){
                 continue;
+            }
+
+            if('2' == $featured){
+                $include = false;
+                $days = get_term_meta($term->term_id,'featured_day', false);
+                foreach($days as $day){
+                    if($day == date_i18n('w')){
+                        $include = true;
+                    }
+                }
+
+                if(!$include){
+                    continue;
+                }
             }
         }
 
@@ -34,7 +50,7 @@ function smamo_rest_categories($data){
         }
 
         if(!$fields || in_array('featured', $fields)){
-            $r_term['category_featured'] = get_term_meta( $term->term_id, 'category_featured', true) ? true : false;
+            $r_term['category_featured'] = get_term_meta( $term->term_id, 'category_featured', true);
         }
 
 

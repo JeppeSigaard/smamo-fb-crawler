@@ -29,7 +29,30 @@ piklist('field', array(
     'description' => 'Præsenteret kategori',
     'taxonomy' => 'category',
     'choices' => array(
-        '0' => 'nej',
-        '1' => 'ja',
+        '0' => 'Aldrig',
+        '1' => 'Altid',
+        '2' => 'På en dag',
+    ),
+));
+
+piklist('field', array(
+    'type' => 'select',
+    'field' => 'featured_day',
+    'label' => 'Dag',
+    'add_more' => true,
+    'choices' => array(
+        '1' => 'Mandag',
+        '2' => 'Tirsdag',
+        '3' => 'Onsdag',
+        '4' => 'Torsdag',
+        '5' => 'Fredag',
+        '6' => 'Lørdag',
+        '0' => 'Søndag',
+    ),
+    'conditions' => array(
+        array(
+            'field' => 'category_featured',
+            'value' => '2',
+        ),
     ),
 ));
