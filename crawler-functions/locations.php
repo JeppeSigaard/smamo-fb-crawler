@@ -28,6 +28,7 @@ foreach ($locations as $location) {
             'ID' => $location->ID,
             'post_type'   => 'location',
             'post_title'  => $body['name'],
+            'post_name'   => $location->ID,
             'post_status' => 'publish',
         ));
 
