@@ -59,6 +59,7 @@ foreach($locations as $location){
             $event_post_id = wp_insert_post(array(
                 'post_type'   => 'event',
                 'post_title'  => $event['name'],
+                'post_name' => sanitize_title($event['name']),
                 'post_status' => 'publish',
             ));
             $response['events']['new'][] = $event_post_id;
@@ -69,11 +70,6 @@ foreach($locations as $location){
             $response['events']['old'][] = $event_post_id;
         }
 
-        // Set post_name to ID
-        wp_update_post(array(
-            'ID' => $event_post_id,
-            'post_name' => $event_post_id,
-        ));
 
         update_post_meta($event_post_id, "parentpicture", $body["picture"]['data']['url']);
 

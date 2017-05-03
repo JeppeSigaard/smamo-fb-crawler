@@ -30,6 +30,7 @@ if ( !$event_buffer ) {
     $event_post_id = wp_insert_post(array(
         'post_type'   => 'event',
         'post_title'  => $event['name'],
+        'post_name' => sanitize_title($event['name']),
         'post_status' => 'publish',
     ));
     $response['events']['new'] = $event_post_id;

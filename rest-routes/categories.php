@@ -56,6 +56,7 @@ function smamo_rest_categories($data){
 
         if(!$fields || in_array('slug', $fields)){
             $r_term['category_slug'] = $term->slug;
+            $r_term['slug'] = $term->slug;
         }
 
         if(!$fields || in_array('img', $fields)){
@@ -68,6 +69,10 @@ function smamo_rest_categories($data){
 
         if(!$fields || in_array('parent', $fields)){
             $r_term['category_parent'] = $term->parent;
+        }
+
+        if(!$fields || in_array('type', $fields)){
+            $r_term['type'] = 'category';
         }
 
         $r[] = $r_term;
@@ -85,7 +90,7 @@ function smamo_rest_category_single($data){
     // Catch identifier
     $id = esc_attr($data['id']);
 
-    $term = get_term_by('id', $id,'category');
+    $term = get_term_by('id', $id, 'category');
 
     if(!$term){
         $term = get_term_by('slug', $id, 'category');
@@ -105,10 +110,15 @@ function smamo_rest_category_single($data){
 
     if(!$fields || in_array('slug', $fields)){
         $r['category_slug'] = $term->slug;
+        $r['slug'] = $term->slug;
     }
 
     if(!$fields || in_array('img', $fields)){
         $r['category_imgurl'] = get_term_meta( $term->term_id, 'category_thumbnail', true);
+    }
+
+    if(!$fields || in_array('type', $fields)){
+        $r['type'] = 'category';
     }
 
     if(!$fields || in_array('count', $fields)){

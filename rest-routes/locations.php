@@ -3,10 +3,14 @@
 function smamo_rest_locations( $data ) {
 
     $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
+    $orderby = (isset($data['orderby'])) ? esc_attr($data['orderby']) : 'RAND';
+    $order = (isset($data['order'])) ? esc_attr($data['order']) : 'ASC';
 
     // Main query vars
     $query = array(
         'post_type' => 'location',
+        'orderby' => $orderby,
+        'order' => $order,
     );
 
     // if per page

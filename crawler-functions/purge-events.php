@@ -41,12 +41,5 @@ foreach(get_posts([ 'post_type' => 'event', 'posts_per_page' => -1, 'post_status
         wp_delete_post($event->ID, true);
         continue;
     }
-
-
-    // Set post_name to ID
-    wp_update_post(array(
-        'ID' => $event->ID,
-        'post_name' => $event->ID,
-    ));
 }
 

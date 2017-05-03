@@ -10,7 +10,7 @@
     // These are included, if no fields array is passed
     if(!$fields){
         $fields = array(
-            'date','date_gmt','title',
+            'type','date','date_gmt','title',
             'start_time','end_time','fbid','parentname','parentid', 'parentfbid',
             'name','description','adress','phone','imgurl',
             'ticket_uri', 'website', 'images', 'picture', 'parentpicture',
