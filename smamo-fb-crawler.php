@@ -21,6 +21,7 @@ require 'rest-routes/categories.php';
 require 'rest-routes/commercials.php';
 require 'rest-routes/menus.php';
 require 'rest-routes/user.php';
+require 'rest-routes/discover.php';
 
 // Crawler functions
 require 'crawler-functions/formatting/hours-format.php';

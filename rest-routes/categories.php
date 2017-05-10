@@ -75,6 +75,30 @@ function smamo_rest_categories($data){
             $r_term['type'] = 'category';
         }
 
+        if(!$fields || in_array('location_img', $fields)){
+            $term_loc = get_posts(array(
+                'post_type' => 'location',
+                'posts_per_page' => -1,
+                'orderby' => 'RAND',
+                'order' => 'ASC',
+                'tax_query' => array(
+                    array(
+                        'taxonomy' => 'category',
+                        'field' => 'term_id',
+                        'terms' => $term->term_id,
+                    ),
+
+                ),
+            ));
+
+            foreach($term_loc as $l){
+               if(get_post_meta($l->ID,'coverphoto', true)){
+                   $r_term['location_img'] = get_post_meta($l->ID,'coverphoto', true);
+                   break;
+               }
+            }
+        }
+
         $r[] = $r_term;
     }
 
@@ -100,6 +124,19 @@ function smamo_rest_category_single($data){
         return $r;
     }
 
+    $term_loc = get_posts(array(
+        'post_type' => 'location',
+        'posts_per_page' => -1,
+        'tax_query' => array(
+            array(
+                'taxonomy' => 'category',
+                'field' => 'term_id',
+                'terms' => $term->term_id,
+            ),
+
+        ),
+    ));
+
     $r = array(
         'category_id' => $term->term_id,
     );
@@ -123,18 +160,6 @@ function smamo_rest_category_single($data){
 
     if(!$fields || in_array('count', $fields)){
         $location_count = 0;
-        $term_loc = get_posts(array(
-            'post_type' => 'location',
-            'posts_per_page' => -1,
-            'tax_query' => array(
-                array(
-                    'taxonomy' => 'category',
-                    'field' => 'term_id',
-                    'terms' => $term->term_id,
-                ),
-
-            ),
-        ));
 
         foreach($term_loc as $l){
             $location_count ++;
@@ -142,7 +167,17 @@ function smamo_rest_category_single($data){
             $r['locations'][] = smamo_rest_get_fields($l, $fields);
         }
 
+
         $r['location_count'] = $location_count;
+    }
+
+    if(!$fields || in_array('location_img', $fields)){
+        foreach($term_loc as $l){
+           if(get_post_meta($l->ID,'coverphoto', true)){
+               $r['location_img'] = get_post_meta($l->ID,'coverphoto', true);
+               break;
+           }
+        }
     }
 
     return $r;

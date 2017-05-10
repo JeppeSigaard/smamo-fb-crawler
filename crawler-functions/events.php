@@ -11,18 +11,18 @@ foreach($locations as $location){
         $fbgr = $fb->get( '/'.$fbid.'?fields=id,about,location,name,picture,category,phone,emails,website,events{photos{images},cover{source,id},name,description,id,start_time,end_time,place,ticket_uri,owner,is_canceled}' );
         $body = $fbgr->getDecodedBody();
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
-        $response['error'][] = 'Graph returned an error: ' . $e->getMessage(); continue;
+        $response['response_error'][] = 'Graph returned an error: ' . $e->getMessage(); continue;
     } catch(Facebook\Exceptions\FacebookSDKException $e) {
-        $response['error'][] = 'Facebook SDK returned an error: ' . $e->getMessage(); continue;
+        $response['sdk_error'][] = 'Facebook SDK returned an error: ' . $e->getMessage(); continue;
     }
 
     // Loops through all events
     foreach ( $body['events']['data'] as $event ) {
 
-        // Skip events before now
+        // Skip events before a month ago
         $event_start = strtotime(substr($event["start_time"], 0, 19));
-        $now = strtotime('now');
-        if($event_start < $now){
+        $event_start_limit = strtotime('-1 month');
+        if($event_start < $event_start_limit){
             continue;
         }
 

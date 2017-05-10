@@ -19,7 +19,7 @@ foreach(get_posts([ 'post_type' => 'event', 'posts_per_page' => -1, 'post_status
 
     // Forælders facebook ID, slet hvis mangler
     $parentfbid = get_post_meta($event->ID, 'parentfbid', true);
-    if(!$parent$fbid){
+    if(!$parentfbid){
         wp_delete_post( $event->ID, true );
         continue;
     }
@@ -32,8 +32,14 @@ foreach(get_posts([ 'post_type' => 'event', 'posts_per_page' => -1, 'post_status
 
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
         wp_delete_post($event->ID, true);
+        continue;
 
     } catch(Facebook\Exceptions\FacebookSDKException $e) {
+        continue;
+    }
+
+    if($body['error']){
+        wp_delete_post($event->ID, true);
         continue;
     }
 
