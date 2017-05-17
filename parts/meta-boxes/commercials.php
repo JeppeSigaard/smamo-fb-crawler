@@ -13,6 +13,21 @@ piklist('field',array(
     'label' => 'Link',
 ));
 
+// Search commercial
+piklist('field', array(
+    'type' => 'file'
+    ,'field' => 'commercial_tn_search'
+    ,'label' => 'Tilføj reklame til søgefelt'
+    ,'description' => ''
+    ,'post_type' => 'commercial'
+    ,'options' => array(
+        'modal_title' => 'Tilføj billede'
+        ,'button' => 'Tilføj'
+        ,'multiple' => false
+        ,'save' => 'url'
+    )
+));
+
 // Large commercial
 piklist('field', array(
     'type' => 'file'

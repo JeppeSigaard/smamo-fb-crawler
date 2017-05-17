@@ -5,7 +5,7 @@ function smamo_rest_commercials( $data ) {
     $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
 
     // Main query vars
-    $query = array( 'post_type' => 'commercial' );
+    $query = array( 'post_type' => 'commercial', 'post_status' => 'publish' );
 
     // if per page
     if(isset($data['per_page'])){
@@ -16,6 +16,12 @@ function smamo_rest_commercials( $data ) {
             $query['offset'] = esc_attr($data['per_page']) * ( (int)esc_attr($data['page']) - 1 );
         }
 
+    }
+
+    // if order
+    if(isset($data['orderby'])){
+        $query['orderby'] = esc_attr($data['orderby']);
+        $query['order'] = (isset($data['order'])) ? esc_attr($data['order']) : 'ASC';
     }
 
     // Fetch posts

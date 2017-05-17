@@ -12,7 +12,7 @@ foreach ($locations as $location) {
     if(!$path){ continue; }
 
     try {
-        $fbgr = $fb->get( '/'.urlencode($path).'?fields=id,about,location,name,picture,hours,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
+        $fbgr = $fb->get( '/'.urlencode($path).'?fields=id,about,location,name,description,picture,hours,category,phone,emails,website,cover{source},events{cover{source},name,description,id,start_time,end_time,place,ticket_uri}' );
         $body = $fbgr->getDecodedBody();
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
         $response['error'][] = 'Graph returned an error: ' . $e->getMessage(); continue;
@@ -22,6 +22,7 @@ foreach ($locations as $location) {
 
     $fbid = get_post_meta($location->ID, 'fbid', true);
     if($update_old || !$fbid){
+
 
         // Insert new post or update exsting
         $loc_id = wp_update_post(array(
@@ -34,6 +35,7 @@ foreach ($locations as $location) {
 
         update_post_meta($loc_id, "fbid", $body["id"]);
         update_post_meta($loc_id, "about", $body["about"]);
+        update_post_meta($loc_id, "description", $body["description"]);
         update_post_meta($loc_id, "adress", $body["location"]["street"]);
         update_post_meta($loc_id, "name", $body["name"]);
         update_post_meta($loc_id, "category", $body["category"]);

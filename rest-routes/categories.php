@@ -145,6 +145,10 @@ function smamo_rest_category_single($data){
         $r['category_name'] = $term->name;
     }
 
+    if(!$fields || in_array('parent', $fields)){
+        $r['parent'] = $term->parent;
+    }
+
     if(!$fields || in_array('slug', $fields)){
         $r['category_slug'] = $term->slug;
         $r['slug'] = $term->slug;
@@ -178,6 +182,12 @@ function smamo_rest_category_single($data){
                break;
            }
         }
+    }
+
+    if(!$fields || in_array('category_children', $fields)){
+        $children = array();
+        $chidren_query = get_terms(array('child_of' => $term->term_id, 'taxonomy' => 'category', 'hide_empty' => false));
+        $r['children'] = $chidren_query;
     }
 
     return $r;

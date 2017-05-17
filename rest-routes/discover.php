@@ -6,40 +6,28 @@ function smamo_rest_discover($data){
     $post_types = (isset($data['type'])) ? explode(',', $data['type']) : array('location', 'event');
     $orderby = (isset($data['orderby'])) ? esc_attr($data['orderby']) : 'RAND';
     $order = (isset($data['order'])) ? esc_attr($data['order']) : 'ASC';
-    $per_page = (isset($data['per_page'])) ? esc_attr($data['per_page']) : '100';
+    $per_page = (isset($data['per_page'])) ? esc_attr($data['per_page']) : -1;
     $page = (isset($data['page'])) ? esc_attr($data['page']) : '1';
     $after = (isset($data['after'])) ? strtotime( esc_attr( $data['after'] )) : false;
     $before = (isset($data['before'])) ? strtotime( esc_attr( $data['before'] )) : false;
 
     $r = array();
+
     if ($term){
-        $meta_query = array(
-            'relation' => 'or',
-            array(
-                'key' => 'description',
-                'value' => $term,
-                'compare' => 'LIKE',
-            ),
 
-            array(
-                'key' => 'about',
-                'value' => $term,
-                'compare' => 'LIKE',
-            ),
-
-            array(
-                'key' => 'parentname',
-                'value' => $term,
-                'compare' => 'LIKE',
-            ),
-
-            array(
-                'key' => 'title',
-                'value' => $term,
-                'compare' => 'LIKE',
-            ),
-
+        $meta_field_indexes = array(
+            'description', 'about', 'parentname',
+            'name', 'title', 'slug',
         );
+
+        $meta_query = array('relation' => 'or');
+        foreach($meta_field_indexes as $s_term){
+          $meta_query[] = array(
+                'key' => $s_term,
+                'value' => $term,
+                'compare' => 'LIKE',
+            );
+        }
 
         // If after is set
         if($after){
