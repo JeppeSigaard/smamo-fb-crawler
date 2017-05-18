@@ -186,8 +186,18 @@ function smamo_rest_category_single($data){
 
     if(!$fields || in_array('category_children', $fields)){
         $children = array();
-        $chidren_query = get_terms(array('child_of' => $term->term_id, 'taxonomy' => 'category', 'hide_empty' => false));
-        $r['children'] = $chidren_query;
+        $children_query = get_terms(array('child_of' => $term->term_id, 'taxonomy' => 'category'));
+
+        foreach($children_query as $child){
+            $children[] = array(
+                'category_id' => $child->term_id,
+                'category_name' => $child->name,
+                'category_slug' => $child->slug,
+                'category_parent' => $child->parent,
+                'category_count' => $child->count,
+            );
+        }
+        $r['children'] = $children;
     }
 
     return $r;
