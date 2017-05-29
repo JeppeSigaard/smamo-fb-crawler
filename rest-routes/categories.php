@@ -147,6 +147,7 @@ function smamo_rest_category_single($data){
 
     if(!$fields || in_array('parent', $fields)){
         $r['parent'] = $term->parent;
+        $r['category_parent'] = $term->parent;
     }
 
     if(!$fields || in_array('slug', $fields)){
@@ -193,8 +194,11 @@ function smamo_rest_category_single($data){
                 'category_id' => $child->term_id,
                 'category_name' => $child->name,
                 'category_slug' => $child->slug,
+                'slug' => $child->slug,
                 'category_parent' => $child->parent,
+                'parent' => $child->parent,
                 'category_count' => $child->count,
+                'type' => 'category',
             );
         }
         $r['children'] = $children;

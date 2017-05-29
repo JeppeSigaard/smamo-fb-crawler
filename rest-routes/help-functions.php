@@ -36,8 +36,12 @@
             foreach($terms as $term){
                 $cat_array[] = array(
                     'category_id' => $term->term_id,
+                    'type' => 'category',
                     'category_name' => $term->name,
                     'category_slug' => $term->slug,
+                    'slug' => $term->slug,
+                    'category_parent' => $term->parent,
+                    'parent' => $term->parent,
                     'category_imgurl' => get_term_meta( $term->term_id, 'category_thumbnail', true),
                 );
             }
