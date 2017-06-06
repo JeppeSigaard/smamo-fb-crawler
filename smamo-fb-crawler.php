@@ -31,6 +31,8 @@ add_action( 'wp_ajax_smamo_crawl', 'smamo_crawl' );
 add_action( 'wp_ajax_nopriv_smamo_crawl', 'smamo_crawl' );
 function smamo_crawl() {
 
+
+
     require_once plugin_dir_path(__FILE__) . 'php-graph-sdk-5.0.0/src/Facebook/autoload.php';
 
     $response = array(

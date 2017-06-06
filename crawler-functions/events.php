@@ -77,7 +77,7 @@ foreach($locations as $location){
         if($update_old || !$event_buffer ){
 
             $images = array(); $i = 0;
-            foreach($event['photos']['data']['images'] as $image){
+            foreach($event['photos']['data'][0]['images'] as $image){
                 $key = ($i === 0) ? 'full' : $image['height'];
                 $images[$key] = $image['source'];
                 $i ++;

@@ -1,5 +1,6 @@
 <?php
 
+
 $locations = get_posts(array( 'post_type' => 'location', 'numberposts' => -1 ));
 foreach ($locations as $location) {
 
@@ -21,8 +22,8 @@ foreach ($locations as $location) {
     }
 
     $fbid = get_post_meta($location->ID, 'fbid', true);
-    if($update_old || !$fbid){
 
+    if($update_old || !$fbid){
 
         // Insert new post or update exsting
         $loc_id = wp_update_post(array(
@@ -37,7 +38,7 @@ foreach ($locations as $location) {
         update_post_meta($loc_id, "about", $body["about"]);
         update_post_meta($loc_id, "description", $body["description"]);
         update_post_meta($loc_id, "adress", $body["location"]["street"]);
-        update_post_meta($loc_id, "name", $body["name"]);
+        update_post_meta($loc_id, "name", $body['name']);
         update_post_meta($loc_id, "category", $body["category"]);
         update_post_meta($loc_id, "hours", json_encode( format_hours( $body['hours'] ) ));
         update_post_meta($loc_id, "phone", $body["phone"]);
