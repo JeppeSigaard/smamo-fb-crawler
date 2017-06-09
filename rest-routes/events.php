@@ -47,7 +47,6 @@ function smamo_rest_events( $data ) {
 
     // If after is set
     if($after){
-        $query['order'] = 'ASC';
         $meta_query[] = array(
             'key' => 'start_time',
             'value' => $after,
@@ -58,13 +57,22 @@ function smamo_rest_events( $data ) {
 
     // if before is set
     if($before){
-        $query['order'] = 'DESC';
         $meta_query[] = array(
             'key' => 'start_time',
             'value' => $before,
             'compare' => '<',
             'type' => 'DATETIME',
         );
+    }
+
+    if($after && !$before){$query['order'] = 'ASC';}
+    if($before){$query['order'] = 'DESC';}
+
+    // if ids
+    if(isset($data['ids'])){
+        $ids = explode(',', $data['fields']);
+        $query['post__in'] = $ids;
+        $query['ignore_sticky_posts'] = true;
     }
 
     // if category
@@ -92,11 +100,11 @@ function smamo_rest_events( $data ) {
         ));
 
         foreach($locations as $location){
-            $loc_ids[] = get_post_meta( $location->ID,'fbud', true);
+            $loc_ids[] = get_post_meta( $location->ID,'fbid', true);
         }
 
         $meta_query[] = array(
-            'key' => 'parentid',
+            'key' => 'parentfbid',
             'value' => $loc_ids,
             'compare' => 'IN',
         );
