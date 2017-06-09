@@ -70,7 +70,7 @@ function smamo_rest_events( $data ) {
 
     // if ids
     if(isset($data['ids'])){
-        $ids = explode(',', $data['fields']);
+        $ids = explode(',', $data['ids']);
         $query['post__in'] = $ids;
         $query['ignore_sticky_posts'] = true;
     }
