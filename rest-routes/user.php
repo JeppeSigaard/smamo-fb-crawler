@@ -83,7 +83,11 @@ function smamo_rest_update_user($data){
     foreach($post_meta as $k => $v){
         if($overwrite){
             $update = update_user_meta($user->ID, $k, $v);
-            if(!$update){ return new WP_Error( 'error', 'Data could not be updated', array( 'status' => 400 ) );}
+            if(!$update){
+                if ( get_user_meta($user->ID,  $k, true ) != $v ){
+                    return new WP_Error( 'error', 'Data could not be updated', array( 'status' => 400 ) );
+                }
+            }
         }
 
         else{
