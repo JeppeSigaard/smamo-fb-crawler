@@ -14,6 +14,10 @@ function smamo_rest_categories($data){
         'order' => 'ASC',
     );
 
+    if (isset($data['orderby'])){ $term_query['orderby'] = esc_attr($data['orderby']); }
+    if (isset($data['order'])){ $term_query['order'] = esc_attr($data['order']); }
+    if (isset($data['per_page'])){ $term_query['number'] = esc_attr($data['per_page']); }
+
     $terms = get_terms($term_query);
 
     foreach($terms as $term){
