@@ -51,5 +51,10 @@ foreach ($locations as $location) {
         } else {
             delete_post_meta($loc_id, "website");
         }
+
+        // location register hook
+        if(!$fbid){
+            do_action( 'twn_location_register', $location->ID );
+        }
     }
 }
