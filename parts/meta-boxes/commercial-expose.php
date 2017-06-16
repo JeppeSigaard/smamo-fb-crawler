@@ -17,11 +17,20 @@ piklist('field', array(
 ));
 
 
+// CO Expose
+piklist('field', array(
+    'type' => 'number',
+    'field' => 'co_expose',
+    'label' => 'Visninger',
+    'post_type' => 'commercial',
+    'columns' => 12,
+));
+
 // Expose
 piklist('field', array(
     'type' => 'number',
     'field' => 'expose',
-    'label' => 'Visninger',
+    'label' => 'Primære Visninger',
     'post_type' => 'commercial',
     'columns' => 12,
 ));
@@ -30,7 +39,7 @@ piklist('field', array(
 piklist('field', array(
     'type' => 'number',
     'field' => 'expose_limit',
-    'label' => 'Grænse for visninger',
+    'label' => 'Grænse for primære visninger',
     'post_type' => 'commercial',
     'columns' => 12,
 ));

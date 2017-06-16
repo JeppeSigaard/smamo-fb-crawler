@@ -1,6 +1,6 @@
 <?php
 
-function smamo_rest_get_commercial_fields($post, $fields = false){
+function smamo_rest_get_commercial_fields($post, $fields = false, $fetch_for = 'search'){
 
     // Always carry expose and priority
     if ($fields && !isset($fields['expose'])){array_push($fields,'expose');}
@@ -15,9 +15,15 @@ function smamo_rest_get_commercial_fields($post, $fields = false){
     if(!$fields){
         $fields = array(
             'link', 'title', 'subtitle', 'img_logo',
-            'img_search', 'img_event_calendar', 'img_event_single', 'img_location_single',
             'priority', 'expose', 'expose_limit', 'end_date',
         );
+    }
+
+    if('search' === $fetch_for){
+        $response_array['img_search'] = get_post_meta($post->ID,'img_search', true);
+    }
+    else{
+        $response_array['img_' . $fetch_for] = get_post_meta($post->ID,'img_event_calendar', true);
     }
 
     // get some data or that field aight
@@ -44,26 +50,28 @@ function smamo_rest_get_commercial_fields($post, $fields = false){
    return $response_array;
 }
 
-
 // Data handling
 function smamo_rest_commercials( $data ) {
-    $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
+
+    $fields = array('link', 'title', 'subtitle', 'img_logo');
 
     // Main query vars
-    $query = array( 'post_type' => 'commercial', 'post_status' => 'publish' );
+    $query = array( 'post_type' => 'commercial', 'post_status' => 'publish', 'posts_per_page' => -1 );
+
 
     // if per page
     $fetch_max = (isset($data['per_page'])) ? esc_attr($data['per_page']) : 9999999;
 
     // if for
     $fetch_for = (isset($data['for'])) ? esc_attr($data['for']) : false;
+    if(!$fetch_for){return(array());} // Lets not allow non-for, for now ;-)
 
 
-    // if order
-    if(isset($data['orderby'])){
-        $query['orderby'] = esc_attr($data['orderby']);
-        $query['order'] = (isset($data['order'])) ? esc_attr($data['order']) : 'ASC';
-    }
+    // Order by exposure, then RAND
+    $query['meta_key'] = 'expose';
+    $query['orderby'] = array('meta_value_num', 'priority');
+    $query['order'] = 'ASC';
+
 
     // Fetch posts
     $posts = get_posts($query);
@@ -75,37 +83,37 @@ function smamo_rest_commercials( $data ) {
     $i = 0; foreach($posts as $p){
 
         // Validate purpose
-        if($fetch_for){
-            if('search' === $fetch_for && !get_post_meta($p->ID, 'img_search', true)) {continue;}
-            if('event_calendar' === $fetch_for && !get_post_meta($p->ID, 'img_event_calendar', true)) {continue;}
-            if('event_single' === $fetch_for && !get_post_meta($p->ID, 'img_event_single', true)) {continue;}
-            if('location_single' === $fetch_for && !get_post_meta($p->ID, 'img_location_single', true)) {continue;}
-        }
+        $for = get_post_meta($p->ID,'for', false);
+        if(!in_array($fetch_for,$for)){continue;}
+
+        // Validate end date
+        $end_date = get_post_meta($p->ID,'end_date', true);
+        if($end_date && strtotime($end_date) < strtotime('now')){continue;}
+
 
         // Update exposure
         $expose = get_post_meta($p->ID, 'expose', true);
-        $expose_limit = get_post_meta($p->ID, 'exposelimit', true);
+        $co_expose = get_post_meta($p->ID, 'co_expose', true);
+        $expose_limit = get_post_meta($p->ID, 'expose_limit', true);
 
         if($expose < 0){$expose = 0;}
+        if($co_expose < 0){$co_expose = 0;}
 
-        if($expose_limit && $expose_limit > 0 && $expose > $expose_limit){return;}
-        $expose ++;
+        if($expose_limit && $expose_limit > 0 && $expose > $expose_limit){continue;}
 
+        $co_expose ++;
+        update_post_meta($p->ID,'co_expose', $expose);
+
+        if($i === 0){
+            $expose ++;
+            update_post_meta($p->ID,'expose', $expose);
+        }
 
         $i++; if ($i > $fetch_max) {continue;}
-        update_post_meta($p->ID,'expose', $expose);
-
-        $r[] = smamo_rest_get_commercial_fields($p,$fields);
+        $r[] = smamo_rest_get_commercial_fields($p, $fields, $fetch_for);
     }
 
-    // Sort $r here before sending
-    /* --- */
-
-    /* --- */
-    // Did you sort it? K good :-)
-
     return $r;
-
 }
 
 // Inits rest route

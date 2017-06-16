@@ -65,7 +65,7 @@ piklist('field', array(
 piklist('field', array(
     'type' => 'file',
     'field' => 'img_event_calendar',
-    'label' => 'Tilføj billede til begivenhedsliste',
+    'label' => 'Tilføj billede til begivenhedsliste, enkeltbegivenhed og enkeltsted',
     'post_type' => 'commercial',
     'options' => array(
         'modal_title' => 'Tilføj billede',
@@ -75,30 +75,15 @@ piklist('field', array(
     )
 ));
 
-// Begivenhedsliste
 piklist('field', array(
-    'type' => 'file',
-    'field' => 'img_event_single',
-    'label' => 'Tilføj billede til Enkeltbegivenhed',
-    'post_type' => 'commercial',
-    'options' => array(
-        'modal_title' => 'Tilføj billede',
-        'button' => 'Tilføj',
-        'multiple' => false,
-        'save' => 'url'
-    )
-));
-
-// Stedliste
-piklist('field', array(
-    'type' => 'file',
-    'field' => 'img_location_single',
-    'label' => 'Tilføj billede til Enkeltbegivenhed',
-    'post_type' => 'commercial',
-    'options' => array(
-        'modal_title' => 'Tilføj billede',
-        'button' => 'Tilføj',
-        'multiple' => false,
-        'save' => 'url'
-    )
+    'type' => 'select',
+    'add_more' => 'true',
+    'field' => 'for',
+    'label' => 'Vis reklame i',
+    'choices' => array(
+        '0' => 'Vælg placering(er)',
+        'event_single' => 'Enkeltbegivenheder',
+        'event_calendar' => 'Begivenhedskalender',
+        'location_single' => 'Enkelt sted',
+    ),
 ));
