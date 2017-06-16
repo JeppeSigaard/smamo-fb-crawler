@@ -16,9 +16,6 @@
             'ticket_uri', 'website', 'images', 'picture', 'parentpicture',
             'categories', 'about', 'description', 'slug', 'coverphoto',
             'hours',
-
-            'link', 'commercial_tn_large',
-            'commercial_tn_medium', 'commercial_tn_small','commercial_tn_search',
         );
     }
 
