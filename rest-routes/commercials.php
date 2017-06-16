@@ -69,7 +69,7 @@ function smamo_rest_commercials( $data ) {
 
     // Order by exposure, then RAND
     $query['meta_key'] = 'expose';
-    $query['orderby'] = array('meta_value_num', 'priority');
+    $query['orderby'] = 'meta_value_num';
     $query['order'] = 'ASC';
 
 

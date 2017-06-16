@@ -47,6 +47,21 @@ piklist('field', array(
     )
 ));
 
+piklist('field', array(
+    'type' => 'select',
+    'add_more' => 'true',
+    'field' => 'for',
+    'label' => 'Vis reklame i',
+    'choices' => array(
+        '0' => 'Vælg placering(er)',
+        'search' => 'Søgefelt',
+        'event_single' => 'Enkeltbegivenheder',
+        'event_calendar' => 'Begivenhedskalender',
+        'location_single' => 'Enkelt sted',
+    ),
+));
+
+
 // Baggrund søgefelt
 piklist('field', array(
     'type' => 'file',
@@ -73,17 +88,4 @@ piklist('field', array(
         'multiple' => false,
         'save' => 'url'
     )
-));
-
-piklist('field', array(
-    'type' => 'select',
-    'add_more' => 'true',
-    'field' => 'for',
-    'label' => 'Vis reklame i',
-    'choices' => array(
-        '0' => 'Vælg placering(er)',
-        'event_single' => 'Enkeltbegivenheder',
-        'event_calendar' => 'Begivenhedskalender',
-        'location_single' => 'Enkelt sted',
-    ),
 ));
