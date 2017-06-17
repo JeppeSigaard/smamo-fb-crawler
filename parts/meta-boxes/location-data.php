@@ -57,6 +57,12 @@ piklist('field',[
     'columns' => 8,
 ]);
 
+piklist('field', [
+    'field' => 'hearts',
+    'label' => 'Hjerter',
+    'type' => 'number',
+]);
+
 $pic = get_post_meta(esc_attr($_GET['post']), 'picture', true);
 if($pic){
     piklist('field',array(

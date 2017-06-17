@@ -15,7 +15,7 @@
             'name','description','adress','phone','imgurl',
             'ticket_uri', 'website', 'images', 'picture', 'parentpicture',
             'categories', 'about', 'description', 'slug', 'coverphoto',
-            'hours',
+            'hours', 'hearts'
         );
     }
 
