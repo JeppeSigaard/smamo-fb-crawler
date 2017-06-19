@@ -1,8 +1,28 @@
 <?php
 
+// Get hearts
+$hearts = array();
+$users = get_users();
+foreach( $users as $user ) {
+
+    // User hearts
+    $userhearts = ( get_user_meta( $user->ID, 'hearts' ) ) [0]['locations'];
+    for ( $iter = 0; $iter < count( $userhearts ); $iter++ ) {
+        if ( $userhearts[ $iter ] !== null ) {
+            if ( $hearts === null ) $hearts[ ((string) $iter) ] = 1;
+            else $hearts[ ((string) $iter) ] ++;
+        }
+    }
+
+}
 
 $locations = get_posts(array( 'post_type' => 'location', 'numberposts' => -1 ));
 foreach ($locations as $location) {
+
+    // Update hearts
+    if ( $hearts[ ((string) $location->ID) ] !== null ) {
+        update_post_meta( $location->ID, 'hearts', $hearts[ ((string) $location->ID ) ] );
+    }
 
     $path = get_post_meta($location->ID,'fb_crawl',true);
 
