@@ -79,17 +79,20 @@ function smamo_rest_commercials( $data ) {
     // prepare post array
     $r = array();
 
-    // Loop through and apply fields
+    // Loop through, validate and apply fields
     $i = 0; foreach($posts as $p){
 
         // Validate purpose
         $for = get_post_meta($p->ID,'for', false);
         if(!in_array($fetch_for,$for)){continue;}
 
+        // Validate start date
+        $start_date = get_post_meta($p->ID,'end_date', true);
+        if($start_date && strtotime($start_date) > strtotime('now')){continue;}
+
         // Validate end date
         $end_date = get_post_meta($p->ID,'end_date', true);
         if($end_date && strtotime($end_date) < strtotime('now')){continue;}
-
 
         // Update exposure
         $expose = get_post_meta($p->ID, 'expose', true);
@@ -101,9 +104,11 @@ function smamo_rest_commercials( $data ) {
 
         if($expose_limit && $expose_limit > 0 && $expose > $expose_limit){continue;}
 
+        // Update co-exposure
         $co_expose ++;
-        update_post_meta($p->ID,'co_expose', $expose);
+        update_post_meta($p->ID,'co_expose', $co_expose);
 
+        // update exposure for first
         if($i === 0){
             $expose ++;
             update_post_meta($p->ID,'expose', $expose);

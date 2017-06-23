@@ -44,11 +44,26 @@ piklist('field', array(
     'columns' => 12,
 ));
 
+// start_date
+piklist('field', array(
+    'type' => 'datepicker',
+    'field' => 'start_date',
+    'label' => 'Startdato',
+    'post_type' => 'commercial',
+    'columns' => 12,
+    'options' => array(
+      'dateFormat' => 'yy-m-d'
+    )
+));
+
 // end_date
 piklist('field', array(
-    'type' => 'date',
+    'type' => 'datepicker',
     'field' => 'end_date',
     'label' => 'Slutdato',
     'post_type' => 'commercial',
     'columns' => 12,
+    'options' => array(
+      'dateFormat' => 'yy-m-d'
+    )
 ));
