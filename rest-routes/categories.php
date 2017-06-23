@@ -80,10 +80,11 @@ function smamo_rest_categories($data){
         }
 
         if(!$fields || in_array('location_img', $fields)){
+            $loc_images = array();
             $term_loc = get_posts(array(
                 'post_type' => 'location',
-                'posts_per_page' => -1,
-                'orderby' => 'RAND',
+                'posts_per_page' => 4,
+                'orderby' => 'rand',
                 'order' => 'ASC',
                 'tax_query' => array(
                     array(
@@ -93,10 +94,19 @@ function smamo_rest_categories($data){
                     ),
 
                 ),
+                'meta_query' => array(
+                    array(
+                        'key' => 'coverphoto',
+                        'compare' => '!=',
+                        'value' => ''
+                    ),
+                )
             ));
 
             foreach($term_loc as $l){
-               if(get_post_meta($l->ID,'coverphoto', true)){
+                $location_image = get_post_meta($l->ID,'coverphoto', true);
+                if($location_image && !in_array($location_image,$loc_images)){
+                   $loc_images[] = $location_image;
                    $r_term['location_img'] = get_post_meta($l->ID,'coverphoto', true);
                    break;
                }
