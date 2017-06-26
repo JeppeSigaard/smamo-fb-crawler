@@ -4,7 +4,7 @@ foreach(get_posts([ 'post_type' => 'event', 'posts_per_page' => -1, 'post_status
 
     // Delete old events
     $event_start = strtotime(substr(get_post_meta($event->ID, 'start_time', true), 0, 19));
-    $time = strtotime('-365 day');
+    $time = strtotime('-60 day');
     if($event_start < $time){
         wp_delete_post( $event->ID, true );
         continue;
