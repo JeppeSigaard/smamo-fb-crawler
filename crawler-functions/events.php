@@ -1,6 +1,20 @@
 <?php
 
-$locations = get_posts(array( 'post_type' => 'location', 'numberposts' => -1 ));
+// per crawl
+$event_per_crawl = 100;
+if(get_option('event_per_crawl')){ $event_per_crawl = intval(get_option('event_per_crawl'));}
+else{ update_option('event_per_crawl', $event_per_crawl); }
+
+// event_paginated_crawl
+$event_paginated_crawl = (get_option('event_paginated_crawl')) ? intval(get_option('event_paginated_crawl')) : 0;
+
+$locations = get_posts(array( 'post_type' => 'location', 'numberposts' => $event_per_crawl, 'offset' => ($event_paginated_crawl * $event_per_crawl) ));
+
+// Update event_paginated_crawl
+if(count($locations) < $event_per_crawl){$event_paginated_crawl = 0; }
+else{$event_paginated_crawl ++;}
+update_option('event_paginated_crawl', $event_paginated_crawl);
+
 $events = get_posts(array( 'post_type' => 'event', 'numberposts' => -1 ));
 
 foreach($locations as $location){

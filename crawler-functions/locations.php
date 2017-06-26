@@ -1,5 +1,14 @@
 <?php
 
+
+// per crawl
+$location_per_crawl = 100;
+if(get_option('location_per_crawl')){ $location_per_crawl = intval(get_option('location_per_crawl'));}
+else{ update_option('location_per_crawl', $location_per_crawl); }
+
+// location_paginated_crawl
+$location_paginated_crawl = (get_option('location_paginated_crawl')) ? intval(get_option('location_paginated_crawl')) : 0;
+
 // Get hearts
 $hearts = array();
 $users = get_users();
@@ -16,7 +25,13 @@ foreach( $users as $user ) {
 
 }
 
-$locations = get_posts(array( 'post_type' => 'location', 'numberposts' => -1 ));
+$locations = get_posts(array( 'post_type' => 'location', 'numberposts' => $location_per_crawl, 'offset' => ($location_per_crawl * $location_paginated_crawl ) ));
+
+// Update location_paginated_crawl
+if(count($locations) < $location_per_crawl){$location_paginated_crawl = 0;}
+else{$location_paginated_crawl ++;}
+update_option('location_paginated_crawl', $location_paginated_crawl);
+
 foreach ($locations as $location) {
 
     // Update hearts
