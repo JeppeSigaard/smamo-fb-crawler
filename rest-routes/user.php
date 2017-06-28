@@ -11,7 +11,7 @@ function smamo_rest_get_user_fields($user, $fields = false){
     // These are included, if no fields array is passed
     if(!$fields){
         $fields = array(
-            'display_name', 'email'
+            'display_name', 'email', 'token',
         );
     }
 
@@ -122,7 +122,7 @@ function smamo_rest_signon($data){
     if($fbid_query && isset($fbid_query[0])){
         $user = $fbid_query[0];
 
-        update_user_meta($user->ID, 'token', $token);
+        add_user_meta($user->ID, 'token', $token, false);
 
         return smamo_rest_get_user_fields($user, $fields);
     }
@@ -131,7 +131,7 @@ function smamo_rest_signon($data){
     $user = get_user_by('email', $email);
     if($user){
 
-        update_user_meta($user->ID, 'token', $token);
+        add_user_meta($user->ID, 'token', $token, false);
         update_user_meta($user->ID, 'fbid', $fbid);
 
         return smamo_rest_get_user_fields($user, $fields);

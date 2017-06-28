@@ -27,8 +27,14 @@ function smamo_rest_check_client_id_secret($client_id, $client_secret){
 
 // Basic user token check
 function smamo_rest_check_user_token($user_id, $user_token){
-    $token = get_user_meta(esc_attr($user_id),'token', true);
-    if($token === esc_attr($user_token)){ return true; }
+    $tokens = get_user_meta(esc_attr($user_id), 'token', false);
+
+    if(!$tokens || !is_array($tokens)){ return false; }
+
+    foreach($tokens as $token){
+        if($token === esc_attr($user_token)){ return true; }
+    }
+
     return false;
 }
 
