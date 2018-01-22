@@ -1,147 +1,110 @@
 <?php
 
-function smamo_rest_events( $data ) {
+// Towwwn API get event
+function towwwn_rest_events( $data ) {
 
-    // prepare post array
-    $r = array();
+  // Creates response field
+  $response = array( );
 
-    $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
+  // Extracts data
+  $fields = (isset( $data['fields'] )) ? explode(',', $data['fields']) : false;
+  $parent = (isset( $data['parent'] )) ? esc_attr($data['parent']) : null;
+  $city   = (isset( $data['city'] ))   ? esc_attr($data['city']) : null;
 
-    // Set after and before
-    $parent = (isset($data['parent'])) ? esc_attr($data['parent']) : false;
-    $after = (isset($data['after'])) ? date('Y-m-d\TH:i:s', strtotime(esc_attr( $data['after'] ))) : false;
-    $before = (isset($data['before'])) ? date('Y-m-d\TH:i:s', strtotime(esc_attr( $data['before']))) : false;
+  $after  = (isset( $data['after'] ))  ? date('Y-m-d\TH:i:s', strtotime(esc_attr( $data['after'] ))) : null;
+  $before = (isset( $data['before'] )) ? date('Y-m-d\TH:i:s', strtotime(esc_attr( $data['before']))) : null;
 
-    // Main query vars
-    $query = array(
-        'post_type' => 'event',
-        'meta_key' => 'start_time',
-        'meta_type' => 'DATETIME',
-        'orderby' => 'meta_value',
-    );
+  $perpage = (isset( $data['per_page'] )) ? esc_attr($data['per_page']) : null;
+  $page    = (isset( $data['page'] ))     ? esc_attr($data['page'])     : null;
 
-    // if per page
-    if(isset($data['per_page'])){
-        $query['posts_per_page'] = esc_attr($data['per_page']);
+  // Prepares queries
+  $metaquery = array( 'relation' => 'AND' );
+  $query = array(
+    'posts_per_page' => -1,
+    'post_type' => 'event',
+    'meta_key'  => 'start_time',
+    'meta_type' => 'DATETIME',
+    'orderby'   => 'meta_value',
+  );
 
-        // if page
-        if(isset($data['page'])){
-            $query['offset'] = esc_attr($data['per_page']) * ( (int)esc_attr($data['page']) - 1 );
+  // Applies parent
+  if( $parent !== null ){
+    array_push( $metaquery, array(
+      'key' => 'parentid',
+      'value' => $parent,
+      'compare' => '=',
+    ));
+  }
+
+  // Applies after
+  if( $after !== null ){
+    array_push( $metaquery, array(
+      'key' => 'start_time',
+      'value' => $after,
+      'compare' => '>',
+      'type' => 'DATETIME',
+    ));
+  }
+
+  // Applies before
+  if( $before !== null ){
+    array_push( $metaquery, array(
+      'key' => 'start_time',
+      'value' => $before,
+      'compare' => '<',
+      'type' => 'DATETIME',
+    ));
+  }
+
+  // Sets meta query and fetches events
+  $query['meta_query'] = $metaquery;
+  $posts = get_posts( $query );
+
+  // Loop through, apply fields and check for city
+  foreach( $posts as $post ) {
+
+    // Gets parent
+    $parentid = get_post_meta( $post->ID, 'parentid', true );
+    $cities   = wp_get_post_terms( (int) $parentid, 'city' );
+
+    // Has city
+    $hascity = false;
+    if ( $city !== null ) {
+      foreach ( $cities as $term ) {
+        if ( (int) $term->term_id === (int) $city ) {
+          $hascity = true;
         }
-
+      }
     }
 
-    // prepare meta query
-    $meta_query = array(
-        'relation' => 'AND',
-    );
+    // If city isn't set, return all.
+    else { $hascity = true; }
 
-    // If parent is set
-    if($parent){
-        $meta_query[] = array(
-            'key' => 'parentid',
-            'value' => $parent,
-            'compare' => '=',
-        );
+    // Sets response
+    if ( $hascity ) {
+      array_push( $response, smamo_rest_get_fields( $post, $fields ) );
     }
+  }
 
-    // If after is set
-    if($after){
-        $meta_query[] = array(
-            'key' => 'start_time',
-            'value' => $after,
-            'compare' => '>',
-            'type' => 'DATETIME',
-        );
-    }
+  // Sorts the response
+  usort( $response, function( $a, $b ) {
 
-    // if before is set
-    if($before){
-        $meta_query[] = array(
-            'key' => 'start_time',
-            'value' => $before,
-            'compare' => '<',
-            'type' => 'DATETIME',
-        );
-    }
+    $atime = strtotime(get_post_meta( (int) $a['id'], 'start_time', true ));
+    $btime = strtotime(get_post_meta( (int) $b['id'], 'start_time', true ));
 
-    if($after && !$before){$query['order'] = 'ASC';}
-    if($before){$query['order'] = 'DESC';}
+    if ( $atime > $btime ) { return 1; }
+    if ( $atime < $btime ) { return -1; }
+    return 0;
 
-    // if ids
-    if(isset($data['ids'])){
-        $ids = explode(',', $data['ids']);
-        $query['post__in'] = $ids;
-        $query['ignore_sticky_posts'] = true;
-    }
+  });
 
-    // if category
-    if(isset($data['cat'])){
+  // Applies page offset & returns
+  $response = array_slice($response, $page * $perpage, $perpage);
+  return $response;
 
-        $cats = explode(',', $data['cat']);
-        $loc_ids = array();
-        $locations = get_posts(array(
-            'post_type' => 'location',
-            'posts_per_page' => -1,
-            'tax_query' => array(
-                'relation' => 'OR',
-                array(
-                    'taxonomy' => 'category',
-                    'field' => 'term_id',
-                    'terms' => $cats
-                ),
-
-                array(
-                    'taxonomy' => 'category',
-                    'field' => 'slug',
-                    'terms' => $cats
-                )
-            ),
-        ));
-
-        foreach($locations as $location){
-            $loc_ids[] = get_post_meta( $location->ID,'fbid', true);
-        }
-
-        $meta_query[] = array(
-            'key' => 'parentfbid',
-            'value' => $loc_ids,
-            'compare' => 'IN',
-        );
-
-    }
-
-    if(isset($data['hide_in_calendar'])){
-       $meta_query[] = array(
-           'relation' => 'OR',
-            array(
-                'key' => 'hide_in_calendar',
-                'value' => '1',
-                'compare' => 'NOT EXISTS',
-           ),
-           array(
-                'key' => 'hide_in_calendar',
-                'value' => '1',
-                'compare' => '!=',
-           ),
-        );
-    }
-
-    $query['meta_query'] = $meta_query;
-
-    // Fetch posts
-    $posts = get_posts($query);
-
-    // Loop through and apply fields
-    foreach($posts as $p){
-
-       $r[] = smamo_rest_get_fields($p,$fields);
-    }
-
-    return $r;
 }
 
-function smamo_rest_event_single( $data ){
+function towwwn_rest_event_single( $data ){
 
     $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
 
@@ -175,7 +138,7 @@ function smamo_rest_event_single( $data ){
     return $r;
 }
 
-function smamo_rest_update_event($data){
+function towwwn_rest_update_event($data){
 
     $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
 
@@ -228,22 +191,14 @@ function smamo_rest_update_event($data){
 
 add_action( 'rest_api_init', function () {
 
-    register_rest_route( 'v1', 'events', array(
-		'methods' => 'GET',
-		'callback' => 'smamo_rest_events',
-	) );
+  register_rest_route( 'v1', 'events', array(
+    'methods' => 'GET',
+    'callback' => 'towwwn_rest_events',
+  ));
 
-    register_rest_route( 'v1', 'events/(?P<id>\d+)', array(
-		array(
-            'methods' => 'GET',
-            'callback' => 'smamo_rest_event_single',
-        ),
+  register_rest_route( 'v1', 'events/(?P<id>\d+)', array(
+    'methods' => 'GET',
+    'callback' => 'towwwn_rest_event_single',
+  ));
 
-        array(
-            'methods' => 'POST',
-            'callback' => 'smamo_rest_update_event',
-            'permission_callback' => 'smamo_rest_permission_event',
-        )
-	) );
-
-} );
+});

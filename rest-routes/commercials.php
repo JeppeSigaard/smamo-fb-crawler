@@ -1,7 +1,7 @@
 <?php
 
 // Smamo rest commercials
-function smamo_rest_commercials( $data ) {
+function towwwn_rest_commercials( $data ) {
 
   // Fetches all commercials
   $posts = get_posts(array(
@@ -15,15 +15,14 @@ function smamo_rest_commercials( $data ) {
 
     // Gets meta data
     $meta_data = get_post_meta($post->ID);
+    $buttons   = get_post_meta( $post->ID, 'buttons', true );
 
     // Formats data
     $tmp = array(
-      'id'    => $post->ID,
+      'id' => $post->ID,
       'title' => isset($meta_data['title']) ? $meta_data['title'][0] : null,
-      'img'   => isset($meta_data['img'])   ? $meta_data['img'][0]   : null,
-      'link'  => isset($meta_data['link'])  ? $meta_data['link'][0]  : null,
-      'insta' => isset($meta_data['insta']) ? $meta_data['insta'][0] : null,
-      'fburl' => isset($meta_data['fburl']) ? $meta_data['fburl'][0] : null,
+      'img' => isset($meta_data['img']) ? $meta_data['img'][0] : null,
+      'buttons' => $buttons,
     );
 
     // Pushes formatted data
@@ -40,6 +39,6 @@ function smamo_rest_commercials( $data ) {
 add_action( 'rest_api_init', function () {
     register_rest_route( 'v1', 'commercials', array(
 		'methods' => 'GET',
-		'callback' => 'smamo_rest_commercials',
+		'callback' => 'towwwn_rest_commercials',
 	));
 });

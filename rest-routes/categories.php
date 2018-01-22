@@ -1,125 +1,107 @@
 <?php
 
-function smamo_rest_categories($data){
+// Fetches all towwwn categories
+function towwwn_rest_categories($data) {
 
-    // prepare post array
-    $r = array();
+  // Creates response field
+  $response = array( );
 
-    $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
+  // Extracts data
+  $fields  = (isset( $data['fields'] ))   ? explode(',', $data['fields']) : false;
+  $orderby = (isset( $data['orderby'] ))  ? esc_attr($data['orderby'])    : 'id';
+  $order   = (isset( $data['order'] ))    ? esc_attr($data['order'])      : 'ASC';
+  $perpage = (isset( $data['per_page'] )) ? esc_attr($data['per_page'])   : 999;
+  $city    = (isset( $data['city'] ))     ? esc_attr($data['city'])       : null;
 
-    $term_query = array(
-        'taxonomy' => 'category',
-        'hide_empty' => false,
-        'orderby' => 'id',
-        'order' => 'ASC',
-    );
+  // Prepares query
+  $termquery = array(
+    'taxonomy'   => 'category',
+    'hide_empty' => false,
+    'orderby'    => $orderby,
+    'order'      => $order,
+    'number'     => $perpage,
+  );
 
-    if (isset($data['orderby'])){ $term_query['orderby'] = esc_attr($data['orderby']); }
-    if (isset($data['order'])){ $term_query['order'] = esc_attr($data['order']); }
-    if (isset($data['per_page'])){ $term_query['number'] = esc_attr($data['per_page']); }
+  // Gets all places in defined city
+  $placesInCity = null;
+  if ( $city != null ) {
 
-    $terms = get_terms($term_query);
+    // Gets all places and creates response field
+    $places = get_posts(array('post_type' => 'location', 'posts_per_page' => -1));
+    $placesInCity = array( );
 
-    foreach($terms as $term){
+    // Loops through places and compares
+    foreach ( $places as $place ) {
 
-        if(isset($data['featured']) && $data['featured']){
-
-            $featured = get_term_meta( $term->term_id, 'category_featured', true);
-
-            if(!$featured || '0' == $featured){
-                continue;
-            }
-
-            if('2' == $featured){
-                $include = false;
-                $days = get_term_meta($term->term_id,'featured_day', false);
-                foreach($days as $day){
-                    if($day == date_i18n('w')){
-                        $include = true;
-                    }
-                }
-
-                if(!$include){
-                    continue;
-                }
-            }
+      // Get terms and compares
+      $terms = wp_get_post_terms( $place->ID, 'city' );
+      foreach ( $terms as $term ) {
+        if ( (int) $term->term_id == (int) $city ) {
+          array_push( $placesInCity, $place );
         }
+      }
 
-        $r_term = array(
-            'category_id' => $term->term_id,
-        );
-
-        if(!$fields || in_array('name', $fields)){
-            $r_term['category_name'] = $term->name;
-        }
-
-        if(!$fields || in_array('featured', $fields)){
-            $r_term['category_featured'] = get_term_meta( $term->term_id, 'category_featured', true);
-        }
-
-
-        if(!$fields || in_array('slug', $fields)){
-            $r_term['category_slug'] = $term->slug;
-            $r_term['slug'] = $term->slug;
-        }
-
-        if(!$fields || in_array('img', $fields)){
-            $r_term['category_imgurl'] = get_term_meta( $term->term_id, 'category_thumbnail', true);
-        }
-
-        if(!$fields || in_array('count', $fields)){
-            $r_term['location_count'] = $term->count;
-        }
-
-        if(!$fields || in_array('parent', $fields)){
-            $r_term['category_parent'] = $term->parent;
-        }
-
-        if(!$fields || in_array('type', $fields)){
-            $r_term['type'] = 'category';
-        }
-
-        if(!$fields || in_array('location_img', $fields)){
-            $loc_images = array();
-            $term_loc = get_posts(array(
-                'post_type' => 'location',
-                'posts_per_page' => 4,
-                'orderby' => 'rand',
-                'order' => 'ASC',
-                'tax_query' => array(
-                    array(
-                        'taxonomy' => 'category',
-                        'field' => 'term_id',
-                        'terms' => $term->term_id,
-                    ),
-
-                ),
-                'meta_query' => array(
-                    array(
-                        'key' => 'coverphoto',
-                        'compare' => '!=',
-                        'value' => ''
-                    ),
-                )
-            ));
-
-            foreach($term_loc as $l){
-                $location_image = get_post_meta($l->ID,'coverphoto', true);
-                if($location_image && !in_array($location_image,$loc_images)){
-                   $loc_images[] = $location_image;
-                   $r_term['location_img'] = get_post_meta($l->ID,'coverphoto', true);
-                   break;
-               }
-            }
-        }
-
-        $r[] = $r_term;
     }
 
-    return $r;
+  }
+
+  // Gets the terms
+  $terms = get_terms( $termquery );
+
+  // Loops through terms and generates the response
+  $resp_term = null;
+  foreach ( $terms as $term ) {
+
+    // Creates response term
+    $resp_term = array( 'category_id' => $term->term_id );
+
+    // Name
+    if( !$fields || in_array( 'name', $fields ) ){
+      $resp_term['category_name'] = $term->name;
+    }
+
+    // Place count
+    if( !$fields || in_array( 'count', $fields ) ){
+      $resp_term['location_count'] = $term->count;
+    }
+
+    // Parent
+    if( !$fields || in_array( 'parent', $fields ) ){
+      $resp_term['category_parent'] = $term->parent;
+    }
+
+    // City
+    if ( $placesInCity != null ) {
+
+      // Counter field
+      $counter = 0;
+
+      // Loops through places and compares
+      foreach ( $placesInCity as $place ) {
+        $tmp_terms = wp_get_post_terms( $place->ID, 'category' );
+        foreach ( $tmp_terms as $tmp_term ) {
+          if ( (int) $tmp_term->term_id == (int) $term->term_id ) {
+            $counter ++;
+          }
+        }
+      }
+
+      // Sets location count
+      $resp_term['location_count'] = $counter;
+
+    }
+
+    // Pushes to response
+    array_push( $response, $resp_term );
+
+  }
+
+  // Returns
+  return $response;
+
 }
 
-function smamo_rest_category_single($data){
+function towwwn_rest_category_single($data){
     // prepare post array
     $r = array();
 
@@ -221,16 +203,17 @@ function smamo_rest_category_single($data){
     return $r;
 }
 
+// Registers the rest routes
 add_action( 'rest_api_init', function () {
 
-    register_rest_route( 'v1', 'categories', array(
-		'methods' => 'GET',
-		'callback' => 'smamo_rest_categories',
-	) );
+  register_rest_route( 'v1', 'categories', array(
+    'methods' => 'GET',
+    'callback' => 'towwwn_rest_categories',
+  ));
 
-    register_rest_route( 'v1', 'categories/(?P<id>\d+)', array(
-		'methods' => 'GET',
-		'callback' => 'smamo_rest_category_single',
-	) );
+  register_rest_route( 'v1', 'categories/(?P<id>\d+)', array(
+    'methods' => 'GET',
+    'callback' => 'towwwn_rest_category_single',
+  ));
 
 } );

@@ -8,11 +8,11 @@ function towwwn_rest_places( $data ) {
   $orderby = (isset( $data['orderby'] )) ? esc_attr($data['orderby'])    : 'RAND';
   $order   = (isset( $data['order'] ))   ? esc_attr($data['order'])      : 'ASC';
 
-  $perpage = (isset( $data['per_page'] )) ? $data['per_page'] : false;
-  $page    = (isset( $data['page'] ))     ? $data['page']     : false;
+  $perpage = (isset( $data['per_page'] )) ? esc_attr($data['per_page']) : null;
+  $page    = (isset( $data['page'] ))     ? esc_attr($data['page'])     : null;
 
-  $city = (isset( $data['city'] )) ? $data['city'] : null;
-  $cat  = (isset( $data['cat'] ))  ? $data['cat']  : null;
+  $city = (isset( $data['city'] )) ? esc_attr($data['city']) : null;
+  $cat  = (isset( $data['cat'] ))  ? esc_attr($data['cat'])  : null;
 
   $taxquery = array( 'relation' => 'AND' );
 
@@ -24,14 +24,14 @@ function towwwn_rest_places( $data ) {
   );
 
   // Applies per page
-  if ( $perpage ) {
+  if ( $perpage !== null ) {
 
     // Sets per page
-    $query['posts_per_page'] = esc_attr($perpage);
+    $query['posts_per_page'] = $perpage;
 
     // The page
-    if ( $page ) {
-      $query['offset'] = esc_attr($per_page) * ( (int) esc_attr( $page ) - 1 );
+    if ( $page  !== null) {
+      $query['offset'] = $perpage * ( (int) $page - 1 );
     }
 
   }
@@ -74,39 +74,38 @@ function towwwn_rest_places( $data ) {
 
 }
 
-
+// Fetches a single place
 function towwwn_rest_place_single( $data ){
 
-    $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
+  $fields = (isset($data['fields'])) ? explode(',', $data['fields']) : false;
 
-    // prepare post array
-    $r = array();
+  // prepare post array
+  $r = array();
 
-    // Catch identifier
-    $id = esc_attr($data['id']);
+  // Catch identifier
+  $id = esc_attr($data['id']);
 
-    // First try ID
-    $post = get_post($id);
+  // First try ID
+  $post = get_post($id);
 
-    // Then try fbid
-    if (!$post || 'location' !== $post->post_type){
-        $fbid_query = get_posts(array(
-            'post_type' => 'event',
-            'posts_per_page' => 1,
-            'post_status' => 'publish',
-            'meta_key' => 'fbid',
-            'meta_value' => $id,
-        ));
+  // Then try fbid
+  if (!$post || 'location' !== $post->post_type){
+    $fbid_query = get_posts(array(
+      'post_type' => 'event',
+      'posts_per_page' => 1,
+      'post_status' => 'publish',
+      'meta_key' => 'fbid',
+      'meta_value' => $id,
+    ));
 
-        if($fbid_query && isset($fbid_query[0])){$post = $fbid_query[0];}
-    }
+    if($fbid_query && isset($fbid_query[0])){$post = $fbid_query[0];}
+  }
 
-    if ($post && 'publish' === $post->post_status && $post->post_type === 'location' ){
+  if ($post && 'publish' === $post->post_status && $post->post_type === 'location' ){
+    $r[] = smamo_rest_get_fields($post, $fields);
+  }
 
-        $r[] = smamo_rest_get_fields($post, $fields);
-    }
-
-    return $r;
+  return $r;
 
 }
 
